@@ -5,11 +5,23 @@ import com.example.realmsampleapp.models.UserViewModel
 import com.example.realmsampleapp.models.realmobjects.process.ReleaseRealmObject
 import com.example.realmsampleapp.models.realmobjects.user.UserRealmObject
 import io.realm.Realm
-import java.security.SecureRandom
+import io.realm.RealmConfiguration
 
 class FavProcessRealmOperations {
 
     private var realm: Realm = Realm.getDefaultInstance()
+
+    init {
+        val key = getRealmEncryptionKey()
+
+        val realmConfiguration = RealmConfiguration.Builder()
+            .deleteRealmIfMigrationNeeded()
+            .encryptionKey(key)
+            .build()
+
+        // Open the Realm with encryption enabled
+        realm = Realm.getInstance(realmConfiguration)
+    }
 
 
     fun isProcessInFavoritedList(userViewModel: UserViewModel, process: ReleaseValue): Boolean {
