@@ -11,19 +11,6 @@ class FavProcessRealmOperations {
 
     private var realm: Realm = Realm.getDefaultInstance()
 
-    init {
-        val key = getRealmEncryptionKey()
-
-        val realmConfiguration = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
-            .encryptionKey(key)
-            .build()
-
-        // Open the Realm with encryption enabled
-        realm = Realm.getInstance(realmConfiguration)
-    }
-
-
     fun isProcessInFavoritedList(userViewModel: UserViewModel, process: ReleaseValue): Boolean {
         val userPrimaryKey = userViewModel.user.tenantId + "_" +
                 userViewModel.user.userId + "_" +
