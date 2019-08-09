@@ -18,7 +18,7 @@ open class UserRealmObject : RealmObject() {
     var userId: String? = null
     @RealmField("user_name")
     var userName: String? = null
-    @RealmField("favorite_processes")
+    @RealmField("favoriteProcesses") // Linked object fields must match Kotlin names
     var favoriteProcesses: RealmList<ReleaseRealmObject> = RealmList()
 
     @PrimaryKey
