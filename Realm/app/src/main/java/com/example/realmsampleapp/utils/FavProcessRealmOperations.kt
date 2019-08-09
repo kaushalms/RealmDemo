@@ -5,25 +5,21 @@ import com.example.realmsampleapp.models.UserViewModel
 import com.example.realmsampleapp.models.realmobjects.process.ReleaseRealmObject
 import com.example.realmsampleapp.models.realmobjects.user.UserRealmObject
 import io.realm.Realm
-import io.realm.RealmConfiguration
 
 class FavProcessRealmOperations {
 
-    private var realm: Realm = Realm.getDefaultInstance()
+    val realm: Realm = Realm.getDefaultInstance()
 
-    fun isProcessInFavoritedList(userViewModel: UserViewModel, process: ReleaseValue): Boolean {
+    fun isProcessInFavoriteList(userViewModel: UserViewModel, process: ReleaseValue): Boolean {
         val userPrimaryKey = userViewModel.user.tenantId + "_" +
                 userViewModel.user.userId + "_" +
                 userViewModel.user.userName + "_" +
                 userViewModel.user.url
 
         val userRealmObject = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
-        val favoriteProcesses = userRealmObject?.favoriteProcesses
-        favoriteProcesses?.forEach { favoriteProcess ->
-            if (favoriteProcess.id == process.id)
-                return true
-        }
-        return false
+        return userRealmObject?.favoriteProcesses?.any { favoriteProcess ->
+            favoriteProcess.id == process.id
+        } ?: false
     }
 
     fun removeProcessFromFavoriteList(userViewModel: UserViewModel, processRealmObject: ReleaseRealmObject) {
@@ -35,17 +31,12 @@ class FavProcessRealmOperations {
         val userRealmObject = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
 
         realm.executeTransaction {
-            var indexTobeDeleted: Int? = null
-
-            userRealmObject?.favoriteProcesses?.forEachIndexed { index, releaseRealmObject ->
-                if (releaseRealmObject.id == processRealmObject.id) {
-                    indexTobeDeleted = index
-                    return@forEachIndexed
-                }
+            val indexTobeDeleted: Int? = userRealmObject?.favoriteProcesses?.indexOfFirst { releaseRealmObject ->
+                releaseRealmObject.id == processRealmObject.id
             }
 
             indexTobeDeleted?.let { index ->
-                userRealmObject?.favoriteProcesses?.removeAt(index)
+                userRealmObject.favoriteProcesses.removeAt(index)
             }
         }
     }
@@ -57,21 +48,14 @@ class FavProcessRealmOperations {
                 userViewModel.user.url
 
         val userRealmObject = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
-
         val favoriteProcesses = userRealmObject?.favoriteProcesses
-
-        var isCurrentProcessInFavoriteList = false
-
-        favoriteProcesses?.forEach { releaseRealmObject ->
-            if (releaseRealmObject.id == processRealmObject.id) {
-                isCurrentProcessInFavoriteList = true
-                return
-            }
+        val isCurrentProcessInFavoriteList = favoriteProcesses?.any { releaseRealmObject ->
+            releaseRealmObject.id == processRealmObject.id
         }
 
-        if (!isCurrentProcessInFavoriteList) {
+        if (isCurrentProcessInFavoriteList == false) {
             realm.executeTransaction {
-                userRealmObject?.favoriteProcesses?.add(processRealmObject)
+                favoriteProcesses.add(processRealmObject)
             }
         }
     }

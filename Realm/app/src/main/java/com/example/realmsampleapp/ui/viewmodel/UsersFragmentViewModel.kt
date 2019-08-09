@@ -25,32 +25,32 @@ class UsersFragmentViewModel : ViewModel() {
         addUsersToDb(userViewModelList.value)
     }
 
-    private fun createUserViewModelList(): List<UserViewModel>? {
-        val userViewModelList = ArrayList<UserViewModel>()
+    private fun createUserViewModelList(): List<UserViewModel>? =
         userList.map {
-            userViewModelList.add(UserViewModel(it, false))
+            UserViewModel(it, false)
         }
-        return userViewModelList
-    }
 
     private fun addUsersToDb(users: List<UserViewModel>?) {
+        realm.beginTransaction()
         users?.forEach { userViewModel ->
-            realm.executeTransaction { realm ->
-                val userPrimaryKey = userViewModel.user.tenantId + "_" +
-                        userViewModel.user.userId + "_" +
-                        userViewModel.user.userName + "_" +
-                        userViewModel.user.url
+            val userPrimaryKey = userViewModel.user.tenantId + "_" +
+                    userViewModel.user.userId + "_" +
+                    userViewModel.user.userName + "_" +
+                    userViewModel.user.url
 
-                val existingUser = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
-
-                if (existingUser == null) {
-                    val user = realm.createObject<UserRealmObject>(userPrimaryKey)
-                    user.tenantId = userViewModel.user.tenantId
-                    user.userId = userViewModel.user.userId
-                    user.userName = userViewModel.user.userName
-                    user.url = userViewModel.user.url
-                }
+            if (realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).count() == 0L) {
+                val user = realm.createObject<UserRealmObject>(userPrimaryKey)
+                user.tenantId = userViewModel.user.tenantId
+                user.userId = userViewModel.user.userId
+                user.userName = userViewModel.user.userName
+                user.url = userViewModel.user.url
             }
         }
+        realm.commitTransaction()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        realm.close()
     }
 }

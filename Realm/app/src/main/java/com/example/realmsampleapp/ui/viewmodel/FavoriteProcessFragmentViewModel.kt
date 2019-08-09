@@ -12,27 +12,18 @@ import com.example.realmsampleapp.utils.convertProcessToRealmObject
 
 class FavoriteProcessFragmentViewModel : ViewModel() {
     private lateinit var userViewModel: UserViewModel
-    var processList: List<ReleaseValue> = ProcessListCreator().processList()
+    private var processList: List<ReleaseValue> = ProcessListCreator().processList()
     private val realmOperations = FavProcessRealmOperations()
 
     private val favoriteProcessViewModelList = LiveEvent<List<ProcessViewModel>>()
     fun favoriteProcessViewModelList(): LiveData<List<ProcessViewModel>> = favoriteProcessViewModelList
 
-    private fun createUserViewModelList(): List<ProcessViewModel>? {
-        val favoriteProcessViewModelList = ArrayList<ProcessViewModel>()
+    private fun createUserViewModelList(): List<ProcessViewModel>? =
         processList.map {
-            favoriteProcessViewModelList.add(
-                ProcessViewModel(
-                    it,
-                    realmOperations.isProcessInFavoritedList(userViewModel, it)
-                )
-            )
+            ProcessViewModel(it, realmOperations.isProcessInFavoriteList(userViewModel, it))
         }
-        return favoriteProcessViewModelList
-    }
 
     fun onCreateWithData(userViewModel: UserViewModel) {
-
         this.userViewModel = userViewModel
         favoriteProcessViewModelList.value = createUserViewModelList()
     }
@@ -44,5 +35,10 @@ class FavoriteProcessFragmentViewModel : ViewModel() {
         } else {
             realmOperations.removeProcessFromFavoriteList(userViewModel, processRealmObject)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        realmOperations.realm.close()
     }
 }
