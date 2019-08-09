@@ -5,12 +5,11 @@ import com.example.realmsampleapp.models.UserViewModel
 import com.example.realmsampleapp.models.realmobjects.process.ReleaseRealmObject
 import com.example.realmsampleapp.models.realmobjects.user.UserRealmObject
 import io.realm.Realm
-import java.security.SecureRandom
+import io.realm.RealmConfiguration
 
 class FavProcessRealmOperations {
 
     private var realm: Realm = Realm.getDefaultInstance()
-
 
     fun isProcessInFavoritedList(userViewModel: UserViewModel, process: ReleaseValue): Boolean {
         val userPrimaryKey = userViewModel.user.tenantId + "_" +
