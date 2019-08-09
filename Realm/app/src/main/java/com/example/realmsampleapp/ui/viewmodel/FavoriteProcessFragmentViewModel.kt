@@ -12,7 +12,7 @@ import com.example.realmsampleapp.utils.convertProcessToRealmObject
 
 class FavoriteProcessFragmentViewModel : ViewModel() {
     private lateinit var userViewModel: UserViewModel
-    var processList: List<ReleaseValue> = ProcessListCreator().processList()
+    private var processList: List<ReleaseValue> = ProcessListCreator().processList()
     private val realmOperations = FavProcessRealmOperations()
 
     private val favoriteProcessViewModelList = LiveEvent<List<ProcessViewModel>>()
