@@ -38,9 +38,7 @@ class UsersFragmentViewModel : ViewModel() {
                     userViewModel.user.userName + "_" +
                     userViewModel.user.url
 
-            val existingUser = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
-
-            if (existingUser == null) {
+            if (realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).count() == 0L) {
                 val user = realm.createObject<UserRealmObject>(userPrimaryKey)
                 user.tenantId = userViewModel.user.tenantId
                 user.userId = userViewModel.user.userId

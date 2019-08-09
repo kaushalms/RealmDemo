@@ -48,16 +48,14 @@ class FavProcessRealmOperations {
                 userViewModel.user.url
 
         val userRealmObject = realm.where(UserRealmObject::class.java).equalTo("id", userPrimaryKey).findFirst()
-
         val favoriteProcesses = userRealmObject?.favoriteProcesses
-
         val isCurrentProcessInFavoriteList = favoriteProcesses?.any { releaseRealmObject ->
             releaseRealmObject.id == processRealmObject.id
         }
 
         if (isCurrentProcessInFavoriteList == false) {
             realm.executeTransaction {
-                userRealmObject.favoriteProcesses.add(processRealmObject)
+                favoriteProcesses.add(processRealmObject)
             }
         }
     }
