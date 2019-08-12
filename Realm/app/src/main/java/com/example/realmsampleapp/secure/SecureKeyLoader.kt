@@ -6,7 +6,6 @@ import com.example.realmsampleapp.utils.ext.hasKey
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.security.SecureRandom
 import javax.crypto.SecretKey
 
 /**
@@ -18,7 +17,6 @@ object SecureKeyLoader {
     private const val KEYSTORE_ERROR_LOG_MESSAGE = "Unable to load Android KeyStore"
 
     private const val REALM_RSA_KEY_ALIAS = "REALM_RSA_KEY_ALIAS"
-
     private const val REALM_AES_KEY_FILE_NAME = "A8684A55130A66AFBDC31A45DD70665C"
 
     fun getRealmAesKey(context: Context, securePreferencesAesKeyStorage: ISecurePreferencesAesKeyStorage): ByteArray? =
