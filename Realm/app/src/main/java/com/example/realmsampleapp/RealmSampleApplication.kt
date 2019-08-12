@@ -22,14 +22,14 @@ class RealmSampleApplication : DaggerApplication() {
 
     private fun initRealm() {
         Realm.init(applicationContext)
-        val key = getRealmEncryptionKey()
-        val realmConfiguration = RealmConfiguration.Builder()
+        val realmConfigurationBuilder = RealmConfiguration.Builder()
             .deleteRealmIfMigrationNeeded()
             .name("demo.app")
             .schemaVersion(1)
-            .encryptionKey(key)
-            .build()
-        Realm.setDefaultConfiguration(realmConfiguration)
+        getRealmEncryptionKey(this)?.let {
+            realmConfigurationBuilder.encryptionKey(it)
+        }
+        Realm.setDefaultConfiguration(realmConfigurationBuilder.build())
     }
 
     private fun initPreferences() {
